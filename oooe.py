@@ -1,23 +1,83 @@
-virtualReg = {}
-# 가상 레지스터 매핑용 {실제 Reg, 시작pc, 소멸pc, 사용하는 총 횟수, 사용된 횟수}, 20개 존재
+virtualReg = [ [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [] ]
+# 가상 레지스터 매핑용 [실제 Reg, 시작pc, 소멸pc], 20개 존재 / RMT
+Logic_VirtualBoard = {"sp": None, "status": None, "Back": None, 
+    "r0": None, "r1": None, "r2": None, "r3": None, 
+    "r4": None, "r5": None, "r6": None, "r7": None,
+    "r8": None, "r9": None, "r10": None, "r11": None
+} # 논리 레지스터가 가장 마지막에 어떤 가상 레지스터에 매핑되어 있는지 여부 저장
 
 # Reservation Queue
-RQalu = [] # RQ add, sub
-RQaluMul = [] # RQ add, sub, mul, div
-RQld = [] # RQ load
-RQst = [] # RQ store
-RQfp = []
-RQbranch = [] # RQ branch [pc, cycle]
+RQalu = [ [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [] ] # RQ add, sub
+RQaluMul = [ [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [] ] # RQ add, sub, mul, div
+RQld = [ [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [] ] # RQ load
+RQst = [ [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [] ] # RQ store
+RQfp = [ [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [] ]
+RQbranch = [ [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [] ] # RQ branch [pc, cycle]
 
-RB = [] # Reorder buffer
+ReoBu = [ [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [],
+    [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], 
+    [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [],
+    [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [],
+    [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [] ] # Reorder buffer
 
 opcodeFile = open("opcode.ocb", "r") # 명령어 파일
 outCycleInfo = open("cycleInfo.txt","w") # 진행된 코드 파일
 
-def virtualRegMapping(opcode):
-    # 레지스터 매핑 및 가상 레지스터 갯수 제한용
-    if opcode[0] =
-    return outop
+def decoderMC(Mcode):
+    # 디코더, 머신코드를 인자로 받고 uCode를 리턴(mci-Machine Code Info)
+    mci = list() # [pc, opcode, opcode의 종류, Rt, R1, R2]
+    # Opcode의 종류: 0-ALU / 1-Load / 2-FP / 3-Store / 4-branch / 5-error
+    
+    mci[0] = Mcode.split() # pc
+    mci[1] = Mcode.split() # opcode
 
-def mappingRQ(opcode):
+    # opcode type
+    if Mcode[0] == "add" or Mcode[0] == "sub" or Mcode[0] == "mul" or Mcode[0] == "div": mci[2] = 0
+    elif Mcode[0] == "ld": mci[2] = 1
+    elif Mcode[0] == "fsadd" or Mcode[0] == "fssub" or Mcode[0] == "fsmul" or Mcode[0] == "fsdiv": mci[2] = 2
+    elif Mcode[0] == "st": mci[2] = 3
+    elif Mcode[0] == "branch": mci[2] = 4
+    else: mci[2] = 5
+    
+    mci[3] = code.split() # Rt
+    mci[4] = code.split() # R1
+    mci[5] = code.split() # R2
+
+    return mci
+
+def virtualRegMapping(uCode):
+    # 레지스터 매핑 및 가상 레지스터 갯수 제한용, uCode를 인자로 받고 가상 레지스터가 매핑된 uCode를 리턴
+    # 그러나, 매핑이 불가능 한 경우, 0을 리턴 (다시 호출 필요)
+
+    vir_uCode = [uCode[0], uCode[1], uCode[2], 0, uCode[3], 0, uCode[4], 0, uCode[5]] # 레지스터가 가상인지 논리인지 저장
+
+    # 비어있는 가상 레지스터 찾기
+    i = 0
+    for vreg in virtualReg:
+        if vreg == []:
+            break
+        i += 1
+        if i == virtualReg.count(): # 가상 레지스터의 유효공간이 꽉찬경우 매핑 불가능
+            return 0
+
+    # 매핑이 가능할때
+    virtualReg[i] = [uCode[3], uCode[0], None]
+    if Logic_VirtualBoard[uCode[3]] == None:
+        # 한번도 해당 논리 레지스터가 매핑된 경우가 없다면
+        Logic_VirtualBoard[uCode[3]] = i 
+    elif Logic_VirtualBoard[uCode[3]] != None:
+        # 한번이라도 해당 논리 레지스터가 매핑된 경우
+        virtualReg[Logic_VirtualBoard[uCode[3]]][2] = uCode[0]
+        Logic_VirtualBoard[uCode[3]] = i
+    
+    vir_uCode[3] = 1
+    vir_uCode[4] = i
+
+    # R1, R2가 연결되는 부분이 있는지 확인 및 지정
+    if 
+
+    return vir_uCode
+
+def mappingRQ(vir_uCode):
     # RQ에 매핑하는 부분
+    return 0
