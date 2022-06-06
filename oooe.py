@@ -51,6 +51,9 @@ def virtualRegMapping(uCode):
 
     vir_uCode = [uCode[0], uCode[1], uCode[2], 0, uCode[3], 0, uCode[4], 0, uCode[5]] # 레지스터가 가상인지 논리인지 저장
 
+    TODO
+    Opcode 종류에 따라 새로운 가상 레지스터를 매핑할지 존재하는 가상 레지스터를 매핑할지 확인하는 부분 필요
+
     # 비어있는 가상 레지스터 찾기
     i = 0
     for vreg in virtualReg:
@@ -74,7 +77,12 @@ def virtualRegMapping(uCode):
     vir_uCode[4] = i
 
     # R1, R2가 연결되는 부분이 있는지 확인 및 지정
-    if 
+    if uCode[4] != "zero" or Logic_VirtualBoard[uCode[4]] != None:
+        vir_uCode[5] = 1
+        vir_uCode[6] = Logic_VirtualBoard[uCode[4]]
+    if uCode[5] != "zero" or Logic_VirtualBoard[uCode[5]] != None:
+        vir_uCode[7] = 1
+        vir_uCode[8] = Logic_VirtualBoard[uCode[4]]
 
     return vir_uCode
 
