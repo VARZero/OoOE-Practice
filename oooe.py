@@ -51,32 +51,34 @@ def virtualRegMapping(uCode):
 
     vir_uCode = [uCode[0], uCode[1], uCode[2], 0, uCode[3], 0, uCode[4], 0, uCode[5]] # 레지스터가 가상인지 논리인지 저장
 
-    TODO
-    Opcode 종류에 따라 새로운 가상 레지스터를 매핑할지 존재하는 가상 레지스터를 매핑할지 확인하는 부분 필요
+    # Opcode 종류에 따라 새로운 가상 레지스터를 매핑할지 존재하는 가상 레지스터를 매핑할지 확인
+    if uCode <= 2:
+        # 비어있는 가상 레지스터 찾기
+        i = 0
+        for vreg in virtualReg:
+            if vreg == []:
+                break
+            i += 1
+            if i == virtualReg.count(): # 가상 레지스터의 유효공간이 꽉찬경우 매핑 불가능
+                return 0
 
-    # 비어있는 가상 레지스터 찾기
-    i = 0
-    for vreg in virtualReg:
-        if vreg == []:
-            break
-        i += 1
-        if i == virtualReg.count(): # 가상 레지스터의 유효공간이 꽉찬경우 매핑 불가능
-            return 0
-
-    # 매핑이 가능할때
-    virtualReg[i] = [uCode[3], uCode[0], None]
-    if Logic_VirtualBoard[uCode[3]] == None:
-        # 한번도 해당 논리 레지스터가 매핑된 경우가 없다면
-        Logic_VirtualBoard[uCode[3]] = i 
-    elif Logic_VirtualBoard[uCode[3]] != None:
-        # 한번이라도 해당 논리 레지스터가 매핑된 경우
-        virtualReg[Logic_VirtualBoard[uCode[3]]][2] = uCode[0]
-        Logic_VirtualBoard[uCode[3]] = i
+        # 매핑이 가능할때
+        virtualReg[i] = [uCode[3], uCode[0], None]
+        if Logic_VirtualBoard[uCode[3]] == None:
+            # 한번도 해당 논리 레지스터가 매핑된 경우가 없다면
+            Logic_VirtualBoard[uCode[3]] = i 
+        elif Logic_VirtualBoard[uCode[3]] != None:
+            # 한번이라도 해당 논리 레지스터가 매핑된 경우
+            virtualReg[Logic_VirtualBoard[uCode[3]]][2] = uCode[0] # 소멸 등록 (소멸 자체는 function unit에서 진행)
+            Logic_VirtualBoard[uCode[3]] = i
     
-    vir_uCode[3] = 1
-    vir_uCode[4] = i
+        vir_uCode[3] = 1
+        vir_uCode[4] = i
+    else:
+        # 해당 논리 레지스터를 찾고 가상 레지스터를 기록 
+        vir_uCode[2] = Logic_VirtualBoard[uCode[3]]
 
-    # R1, R2가 연결되는 부분이 있는지 확인 및 지정
+    # R1, R2가 연결되는 부분이 있는지 확인 및 지정 (0은 그냥 무시)
     if uCode[4] != "zero" or Logic_VirtualBoard[uCode[4]] != None:
         vir_uCode[5] = 1
         vir_uCode[6] = Logic_VirtualBoard[uCode[4]]
@@ -88,4 +90,5 @@ def virtualRegMapping(uCode):
 
 def mappingRQ(vir_uCode):
     # RQ에 매핑하는 부분
+    
     return 0
