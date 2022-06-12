@@ -51,8 +51,11 @@ def virtualRegMapping(uCode):
 
     vir_uCode = [uCode[0], uCode[1], uCode[2], 0, uCode[3], 0, uCode[4], 0, uCode[5]] # 레지스터가 가상인지 논리인지 저장
 
+    
     # Opcode 종류에 따라 새로운 가상 레지스터를 매핑할지 존재하는 가상 레지스터를 매핑할지 확인
-    if uCode <= 2:
+    if uCode[3] == "zero": # 일단 목적지 레지스터가 0이면 의미 없음.
+        vir_uCode[3] = "zero"
+    elif uCode[2] <= 2:
         # 비어있는 가상 레지스터 찾기
         i = 0
         for vreg in virtualReg:
